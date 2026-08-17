@@ -7,6 +7,14 @@ LOCAL_URL="${AGENTIFY_LOCAL_URL:-http://127.0.0.1:8787/}"
 
 cd "$APP_DIR"
 
+# The webhook deploy inherits the service's NODE_ENV=production. That breaks the
+# BUILD/TEST toolchain: npm omits devDependencies, and vitest loads React's
+# production build (React Testing Library then fails). Unset it for this shell —
+# `vite build` still emits a production bundle on its own, and the systemd
+# service keeps NODE_ENV=production at runtime (it re-reads its EnvironmentFile
+# on restart, independent of this shell).
+unset NODE_ENV
+
 printf '[agentify-deploy] repo=%s commit=%s\n' "$APP_DIR" "$(git rev-parse --short HEAD)"
 printf '[agentify-deploy] installing dependencies (incl. dev — the build needs vite/tsc/vitest)\n'
 # The service runs with NODE_ENV=production, which the webhook deploy inherits;
