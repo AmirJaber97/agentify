@@ -7,11 +7,15 @@ import { registerStatic } from './static';
 import { mockAdapter } from './mock/adapter';
 import { MockStore } from './mock/store';
 import { MockStream } from './mock/stream';
+import { githubWebhookHandler } from './hooks';
 
 export function createApp(config: Config): Hono {
   const app = new Hono();
 
   app.route('/auth', authRoutes(config));
+  if (config.githubWebhookSecret) {
+    app.post(config.githubWebhookPath, githubWebhookHandler(config));
+  }
   app.use('/api/*', requireSession(config));
 
   if (config.mockMode) {

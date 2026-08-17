@@ -10,6 +10,8 @@ export interface Config {
   cookieSecure: boolean;
   mockMode: boolean;
   distDir: string;
+  githubWebhookSecret: string;
+  githubWebhookPath: string;
 }
 
 function fail(msg: string): never {
@@ -76,5 +78,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     cookieSecure: env.COOKIE_SECURE === '1' || env.COOKIE_SECURE === 'true',
     mockMode,
     distDir: env.DIST_DIR ?? 'dist',
+    githubWebhookSecret: env.GITHUB_WEBHOOK_SECRET?.trim() ?? '',
+    githubWebhookPath: env.GITHUB_WEBHOOK_PATH?.trim() || '/github-webhook',
   };
 }

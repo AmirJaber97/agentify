@@ -13,6 +13,10 @@ set -euo pipefail
 REPO="$(git rev-parse --show-toplevel)"
 LOG="$REPO/.git/agentify-deploy.log"
 {
+  if [ "${AGENTIFY_SKIP_DEPLOY_HOOK:-}" = "1" ]; then
+    echo "==== post-commit $(date -Is) skipped by AGENTIFY_SKIP_DEPLOY_HOOK ===="
+    exit 0
+  fi
   echo "==== post-commit $(date -Is) $(git rev-parse --short HEAD) ===="
   "$REPO/scripts/deploy-local.sh"
 } >>"$LOG" 2>&1 || {
@@ -27,6 +31,10 @@ set -euo pipefail
 REPO="$(git rev-parse --show-toplevel)"
 LOG="$REPO/.git/agentify-deploy.log"
 {
+  if [ "${AGENTIFY_SKIP_DEPLOY_HOOK:-}" = "1" ]; then
+    echo "==== post-merge $(date -Is) skipped by AGENTIFY_SKIP_DEPLOY_HOOK ===="
+    exit 0
+  fi
   echo "==== post-merge $(date -Is) $(git rev-parse --short HEAD) ===="
   "$REPO/scripts/deploy-local.sh"
 } >>"$LOG" 2>&1 || {
