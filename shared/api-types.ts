@@ -735,6 +735,22 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** HealthUpdateResponse */
+        HealthUpdateResponse: {
+            /**
+             * Intent
+             * @constant
+             */
+            intent: "health_update";
+            /** Execution */
+            execution?: "deterministic_fast_path" | null;
+            /** Response */
+            response?: string | null;
+            /** Update */
+            update?: {
+                [key: string]: unknown;
+            } | null;
+        };
         /** ListAgentsMessageResponse */
         ListAgentsMessageResponse: {
             /**
@@ -1428,7 +1444,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ListAgentsMessageResponse"] | components["schemas"]["CreateAgentMessageResponse"] | components["schemas"]["UnroutedMessageResponse"] | components["schemas"]["MediaUpdateResponse"] | components["schemas"]["AgentExecutionResponse"] | components["schemas"]["DryRunExecutionResponse"];
+                    "application/json": components["schemas"]["ListAgentsMessageResponse"] | components["schemas"]["CreateAgentMessageResponse"] | components["schemas"]["UnroutedMessageResponse"] | components["schemas"]["MediaUpdateResponse"] | components["schemas"]["HealthUpdateResponse"] | components["schemas"]["AgentExecutionResponse"] | components["schemas"]["DryRunExecutionResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1461,7 +1477,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ListAgentsMessageResponse"] | components["schemas"]["CreateAgentMessageResponse"] | components["schemas"]["UnroutedMessageResponse"] | components["schemas"]["MediaUpdateResponse"] | components["schemas"]["AgentExecutionResponse"] | components["schemas"]["DryRunExecutionResponse"];
+                    "application/json": components["schemas"]["ListAgentsMessageResponse"] | components["schemas"]["CreateAgentMessageResponse"] | components["schemas"]["UnroutedMessageResponse"] | components["schemas"]["MediaUpdateResponse"] | components["schemas"]["HealthUpdateResponse"] | components["schemas"]["AgentExecutionResponse"] | components["schemas"]["DryRunExecutionResponse"];
                 };
             };
             /** @description Validation Error */

@@ -61,6 +61,16 @@ describe('MessageResponseView union rendering', () => {
     expect(screen.getByText('Updated Media: Severance is paused')).toBeInTheDocument();
   });
 
+  it('renders health fast-path updates', () => {
+    const health = {
+      intent: 'health_update',
+      execution: 'deterministic_fast_path',
+      response: "Updated Health: today's workout is complete",
+    } as MessageResponse;
+    renderWithProviders(<MessageResponseView response={health} />);
+    expect(screen.getByText("Updated Health: today's workout is complete")).toBeInTheDocument();
+  });
+
   it('renders unrouted responses', () => {
     const unrouted = { intent: 'unrouted', response: 'Could not route.' } as MessageResponse;
     renderWithProviders(<MessageResponseView response={unrouted} />);

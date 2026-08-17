@@ -501,6 +501,9 @@
                       "$ref": "#/components/schemas/MediaUpdateResponse"
                     },
                     {
+                      "$ref": "#/components/schemas/HealthUpdateResponse"
+                    },
+                    {
                       "$ref": "#/components/schemas/AgentExecutionResponse"
                     },
                     {
@@ -557,6 +560,9 @@
                     },
                     {
                       "$ref": "#/components/schemas/MediaUpdateResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/HealthUpdateResponse"
                     },
                     {
                       "$ref": "#/components/schemas/AgentExecutionResponse"
@@ -1945,6 +1951,55 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HealthUpdateResponse": {
+        "properties": {
+          "intent": {
+            "type": "string",
+            "const": "health_update",
+            "title": "Intent"
+          },
+          "execution": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "deterministic_fast_path"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution"
+          },
+          "response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response"
+          },
+          "update": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Update"
+          }
+        },
+        "type": "object",
+        "required": [
+          "intent"
+        ],
+        "title": "HealthUpdateResponse"
       },
       "ListAgentsMessageResponse": {
         "properties": {

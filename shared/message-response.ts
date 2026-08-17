@@ -9,6 +9,7 @@ import type {
   CreateAgentMessageResponse,
   UnroutedMessageResponse,
   MediaUpdateResponse,
+  HealthUpdateResponse,
 } from './types';
 
 export function isAgentExecution(r: MessageResponse): r is AgentExecutionResponse {
@@ -33,4 +34,8 @@ export function isUnrouted(r: MessageResponse): r is UnroutedMessageResponse {
 
 export function isMediaUpdate(r: MessageResponse): r is MediaUpdateResponse {
   return r.intent === 'media_update';
+}
+
+export function isHealthUpdate(r: MessageResponse): r is HealthUpdateResponse {
+  return r.intent === 'health_update';
 }

@@ -31,6 +31,7 @@ export type ListAgentsMessageResponse = components['schemas']['ListAgentsMessage
 export type CreateAgentMessageResponse = components['schemas']['CreateAgentMessageResponse'];
 export type UnroutedMessageResponse = components['schemas']['UnroutedMessageResponse'];
 export type MediaUpdateResponse = components['schemas']['MediaUpdateResponse'];
+export type HealthUpdateResponse = components['schemas']['HealthUpdateResponse'];
 export type AgentExecutionResponse = components['schemas']['AgentExecutionResponse'];
 export type DryRunExecutionResponse = components['schemas']['DryRunExecutionResponse'];
 
@@ -39,6 +40,7 @@ export type MessageResponse =
   | CreateAgentMessageResponse
   | UnroutedMessageResponse
   | MediaUpdateResponse
+  | HealthUpdateResponse
   | AgentExecutionResponse
   | DryRunExecutionResponse;
 

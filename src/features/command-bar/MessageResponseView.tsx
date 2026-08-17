@@ -6,6 +6,7 @@ import {
   isDryRun,
   isListAgents,
   isMediaUpdate,
+  isHealthUpdate,
   isUnrouted,
 } from '@shared/message-response';
 import { Badge, Button } from '@/components/ui';
@@ -67,6 +68,17 @@ export function MessageResponseView({
   if (isMediaUpdate(response)) {
     return (
       <div className="composer" data-intent="media_update">
+        <div className="msg-reply">{response.response}</div>
+        <div className="exec-meta">
+          <span>deterministic fast path</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (isHealthUpdate(response)) {
+    return (
+      <div className="composer" data-intent="health_update">
         <div className="msg-reply">{response.response}</div>
         <div className="exec-meta">
           <span>deterministic fast path</span>
