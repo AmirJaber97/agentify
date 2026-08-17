@@ -1,0 +1,2705 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Personal Agent OS",
+    "description": "Local-first persistent agent control plane for Hermes.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/system/status": {
+      "get": {
+        "summary": "System Status",
+        "operationId": "system_status_api_v1_system_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemStatus"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/agents": {
+      "get": {
+        "summary": "List Agents",
+        "operationId": "list_agents_api_v1_agents_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AgentCard"
+                  },
+                  "type": "array",
+                  "title": "Response List Agents Api V1 Agents Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create Agent",
+        "operationId": "create_agent_api_v1_agents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agent"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/agents/derive": {
+      "post": {
+        "summary": "Derive Agent",
+        "operationId": "derive_agent_api_v1_agents_derive_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DerivedAgentManifest"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/agents/{agent_id}": {
+      "get": {
+        "summary": "Read Agent",
+        "operationId": "read_agent_api_v1_agents__agent_id__get",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agent"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Patch Agent",
+        "operationId": "patch_agent_api_v1_agents__agent_id__patch",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agent"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Archive Agent",
+        "operationId": "archive_agent_api_v1_agents__agent_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArchiveResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/state": {
+      "get": {
+        "summary": "Agent State",
+        "operationId": "agent_state_api_v1_agents__agent_id__state_get",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/tasks": {
+      "get": {
+        "summary": "Agent Tasks",
+        "operationId": "agent_tasks_api_v1_agents__agent_id__tasks_get",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  },
+                  "title": "Response Agent Tasks Api V1 Agents  Agent Id  Tasks Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/activity": {
+      "get": {
+        "summary": "Agent Activity",
+        "operationId": "agent_activity_api_v1_agents__agent_id__activity_get",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Activity"
+                  },
+                  "title": "Response Agent Activity Api V1 Agents  Agent Id  Activity Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/message": {
+      "post": {
+        "summary": "Agent Message",
+        "operationId": "agent_message_api_v1_agents__agent_id__message_post",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListAgentsMessageResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateAgentMessageResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UnroutedMessageResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MediaUpdateResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AgentExecutionResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DryRunExecutionResponse"
+                    }
+                  ],
+                  "title": "Response Agent Message Api V1 Agents  Agent Id  Message Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/message": {
+      "post": {
+        "summary": "Route Message",
+        "operationId": "route_message_api_v1_message_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListAgentsMessageResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/CreateAgentMessageResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UnroutedMessageResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MediaUpdateResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AgentExecutionResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DryRunExecutionResponse"
+                    }
+                  ],
+                  "title": "Response Route Message Api V1 Message Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/agents/{agent_id}/run": {
+      "post": {
+        "summary": "Run Agent",
+        "operationId": "run_agent_api_v1_agents__agent_id__run_post",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentExecutionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tasks": {
+      "get": {
+        "summary": "Tasks",
+        "operationId": "tasks_api_v1_tasks_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  },
+                  "type": "array",
+                  "title": "Response Tasks Api V1 Tasks Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/activity": {
+      "get": {
+        "summary": "Activity",
+        "operationId": "activity_api_v1_activity_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Activity"
+                  },
+                  "type": "array",
+                  "title": "Response Activity Api V1 Activity Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events": {
+      "get": {
+        "summary": "Events",
+        "operationId": "events_api_v1_events_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Event"
+                  },
+                  "type": "array",
+                  "title": "Response Events Api V1 Events Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/models": {
+      "get": {
+        "summary": "Models",
+        "operationId": "models_api_v1_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ModelInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Models Api V1 Models Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dashboard/overview": {
+      "get": {
+        "summary": "Dashboard Overview",
+        "operationId": "dashboard_overview_api_v1_dashboard_overview_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardOverview"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/project-summaries": {
+      "post": {
+        "summary": "Ingest Project Summary",
+        "operationId": "ingest_project_summary_api_v1_project_summaries_post",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectSummaryIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectSummaryIngestResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Project Summaries",
+        "operationId": "project_summaries_api_v1_project_summaries_get",
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_alias",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Alias"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectSummary"
+                  },
+                  "title": "Response Project Summaries Api V1 Project Summaries Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stream": {
+      "get": {
+        "summary": "Stream",
+        "operationId": "stream_api_v1_stream_get",
+        "responses": {
+          "200": {
+            "description": "Server-Sent Events stream",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Activity": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "agent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level",
+            "default": "info"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata",
+            "default": {}
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "message",
+          "created_at"
+        ],
+        "title": "Activity"
+      },
+      "Agent": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "icon": {
+            "type": "string",
+            "title": "Icon",
+            "default": "\u25cc"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "default": "general"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AgentStatus"
+          },
+          "system_instructions": {
+            "type": "string",
+            "title": "System Instructions",
+            "default": ""
+          },
+          "privacy_class": {
+            "$ref": "#/components/schemas/PrivacyClass"
+          },
+          "model_policy": {
+            "$ref": "#/components/schemas/ModelPolicy"
+          },
+          "allowed_tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Tools",
+            "default": []
+          },
+          "memory_namespace": {
+            "type": "string",
+            "title": "Memory Namespace"
+          },
+          "triggers": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Triggers",
+            "default": []
+          },
+          "schedules": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Schedules",
+            "default": []
+          },
+          "permissions": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Permissions",
+            "default": {}
+          },
+          "ui_metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ui Metadata",
+            "default": {}
+          },
+          "state_schema": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "State Schema",
+            "default": {}
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "last_activity_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity At"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "enabled",
+          "status",
+          "privacy_class",
+          "model_policy",
+          "memory_namespace",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "Agent"
+      },
+      "AgentCard": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "icon": {
+            "type": "string",
+            "title": "Icon"
+          },
+          "short_purpose": {
+            "type": "string",
+            "title": "Short Purpose"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AgentStatus"
+          },
+          "privacy_class": {
+            "$ref": "#/components/schemas/PrivacyClass"
+          },
+          "model_policy": {
+            "$ref": "#/components/schemas/ModelPolicy"
+          },
+          "last_activity_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Activity At"
+          },
+          "current_focus": {
+            "type": "string",
+            "title": "Current Focus",
+            "default": ""
+          },
+          "outstanding_tasks": {
+            "type": "integer",
+            "title": "Outstanding Tasks"
+          },
+          "warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning"
+          },
+          "metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metrics",
+            "default": {}
+          },
+          "ui_metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ui Metadata",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "icon",
+          "short_purpose",
+          "category",
+          "enabled",
+          "status",
+          "privacy_class",
+          "model_policy",
+          "outstanding_tasks"
+        ],
+        "title": "AgentCard"
+      },
+      "AgentCreate": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Description",
+            "default": ""
+          },
+          "icon": {
+            "type": "string",
+            "maxLength": 8,
+            "title": "Icon",
+            "default": "\u25cc"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 80,
+            "title": "Category",
+            "default": "general"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "system_instructions": {
+            "type": "string",
+            "maxLength": 8000,
+            "title": "System Instructions",
+            "default": ""
+          },
+          "privacy_class": {
+            "$ref": "#/components/schemas/PrivacyClass",
+            "default": "PERSONAL"
+          },
+          "model_policy": {
+            "$ref": "#/components/schemas/ModelPolicy",
+            "default": "BALANCED"
+          },
+          "allowed_tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Allowed Tools"
+          },
+          "memory_namespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Namespace"
+          },
+          "triggers": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Triggers"
+          },
+          "schedules": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Schedules"
+          },
+          "permissions": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Permissions"
+          },
+          "ui_metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ui Metadata"
+          },
+          "state_schema": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "State Schema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "AgentCreate"
+      },
+      "AgentExecutionResponse": {
+        "properties": {
+          "intent": {
+            "type": "string",
+            "const": "agent_execution",
+            "title": "Intent"
+          },
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "reply": {
+            "type": "string",
+            "title": "Reply"
+          },
+          "structured_result": {
+            "$ref": "#/components/schemas/StructuredResult"
+          },
+          "model_selected": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "policy": {
+            "$ref": "#/components/schemas/ModelPolicy"
+          },
+          "routing_reason": {
+            "type": "string",
+            "title": "Routing Reason"
+          },
+          "duration_ms": {
+            "type": "integer",
+            "title": "Duration Ms"
+          },
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "intent",
+          "task_id",
+          "status",
+          "reply",
+          "structured_result",
+          "policy",
+          "routing_reason",
+          "duration_ms",
+          "success"
+        ],
+        "title": "AgentExecutionResponse"
+      },
+      "AgentPatch": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AgentStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "system_instructions": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Instructions"
+          },
+          "privacy_class": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PrivacyClass"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "model_policy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelPolicy"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "allowed_tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allowed Tools"
+          },
+          "triggers": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Triggers"
+          },
+          "schedules": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schedules"
+          },
+          "permissions": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Permissions"
+          },
+          "ui_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ui Metadata"
+          },
+          "state_schema": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State Schema"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AgentPatch"
+      },
+      "AgentState": {
+        "properties": {
+          "agent_id": {
+            "type": "string",
+            "title": "Agent Id"
+          },
+          "stable_facts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Stable Facts"
+          },
+          "current_state": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Current State"
+          },
+          "structured_data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Structured Data"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agent_id",
+          "stable_facts",
+          "current_state",
+          "structured_data",
+          "updated_at"
+        ],
+        "title": "AgentState"
+      },
+      "AgentStatus": {
+        "type": "string",
+        "enum": [
+          "IDLE",
+          "WORKING",
+          "WAITING",
+          "BLOCKED",
+          "ERROR",
+          "DISABLED"
+        ],
+        "title": "AgentStatus"
+      },
+      "ArchiveResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "archived": {
+            "type": "boolean",
+            "title": "Archived"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "archived"
+        ],
+        "title": "ArchiveResponse"
+      },
+      "CreateAgentMessageResponse": {
+        "properties": {
+          "intent": {
+            "type": "string",
+            "const": "create_agent",
+            "title": "Intent"
+          },
+          "agent": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Agent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposed_agent": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DerivedAgentManifest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response"
+          }
+        },
+        "type": "object",
+        "required": [
+          "intent"
+        ],
+        "title": "CreateAgentMessageResponse"
+      },
+      "DashboardOverview": {
+        "properties": {
+          "system": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "System"
+          },
+          "agents": {
+            "items": {
+              "$ref": "#/components/schemas/AgentCard"
+            },
+            "type": "array",
+            "title": "Agents"
+          },
+          "running_tasks": {
+            "items": {
+              "$ref": "#/components/schemas/Task"
+            },
+            "type": "array",
+            "title": "Running Tasks"
+          },
+          "queued_tasks": {
+            "items": {
+              "$ref": "#/components/schemas/Task"
+            },
+            "type": "array",
+            "title": "Queued Tasks"
+          },
+          "warnings": {
+            "items": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "projects_needing_attention": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectSummary"
+            },
+            "type": "array",
+            "title": "Projects Needing Attention"
+          },
+          "recent_activity": {
+            "items": {
+              "$ref": "#/components/schemas/Activity"
+            },
+            "type": "array",
+            "title": "Recent Activity"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelInfo"
+            },
+            "type": "array",
+            "title": "Models"
+          }
+        },
+        "type": "object",
+        "required": [
+          "system",
+          "agents",
+          "running_tasks",
+          "queued_tasks",
+          "warnings",
+          "projects_needing_attention",
+          "recent_activity",
+          "models"
+        ],
+        "title": "DashboardOverview"
+      },
+      "DerivedAgentManifest": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Description",
+            "default": ""
+          },
+          "icon": {
+            "type": "string",
+            "maxLength": 8,
+            "title": "Icon",
+            "default": "\u25cc"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 80,
+            "title": "Category",
+            "default": "general"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "system_instructions": {
+            "type": "string",
+            "maxLength": 8000,
+            "title": "System Instructions",
+            "default": ""
+          },
+          "privacy_class": {
+            "$ref": "#/components/schemas/PrivacyClass",
+            "default": "PERSONAL"
+          },
+          "model_policy": {
+            "$ref": "#/components/schemas/ModelPolicy",
+            "default": "BALANCED"
+          },
+          "allowed_tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Allowed Tools"
+          },
+          "memory_namespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Namespace"
+          },
+          "triggers": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Triggers"
+          },
+          "schedules": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Schedules"
+          },
+          "permissions": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Permissions"
+          },
+          "ui_metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ui Metadata"
+          },
+          "state_schema": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "State Schema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "DerivedAgentManifest"
+      },
+      "DryRunExecutionResponse": {
+        "properties": {
+          "intent": {
+            "type": "string",
+            "const": "agent_execution",
+            "title": "Intent"
+          },
+          "would_execute_model": {
+            "type": "boolean",
+            "title": "Would Execute Model"
+          }
+        },
+        "type": "object",
+        "required": [
+          "intent",
+          "would_execute_model"
+        ],
+        "title": "DryRunExecutionResponse"
+      },
+      "Event": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "agent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload",
+            "default": {}
+          },
+          "privacy_class": {
+            "$ref": "#/components/schemas/PrivacyClass"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "summary",
+          "privacy_class",
+          "created_at"
+        ],
+        "title": "Event"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ListAgentsMessageResponse": {
+        "properties": {
+          "intent": {
+            "type": "string",
+            "const": "list_agents",
+            "title": "Intent"
+          },
+          "agents": {
+            "items": {
+              "$ref": "#/components/schemas/AgentCard"
+            },
+            "type": "array",
+            "title": "Agents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "intent",
+          "agents"
+        ],
+        "title": "ListAgentsMessageResponse"
+      },
+      "MediaUpdateResponse": {
+        "properties": {
+          "intent": {
+            "type": "string",
+            "const": "media_update",
+            "title": "Intent"
+          },
+          "execution": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "deterministic_fast_path"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution"
+          },
+          "response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response"
+          },
+          "update": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Update"
+          }
+        },
+        "type": "object",
+        "required": [
+          "intent"
+        ],
+        "title": "MediaUpdateResponse"
+      },
+      "MessageIn": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 12000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run",
+            "default": false
+          },
+          "require_model": {
+            "type": "boolean",
+            "title": "Require Model",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "MessageIn"
+      },
+      "ModelInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "base_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Url"
+          },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Capabilities",
+            "default": []
+          },
+          "privacy_allowed": {
+            "items": {
+              "$ref": "#/components/schemas/PrivacyClass"
+            },
+            "type": "array",
+            "title": "Privacy Allowed",
+            "default": []
+          },
+          "cost_class": {
+            "type": "string",
+            "title": "Cost Class",
+            "default": "unknown"
+          },
+          "latency_class": {
+            "type": "string",
+            "title": "Latency Class",
+            "default": "unknown"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "priority": {
+            "type": "integer",
+            "title": "Priority",
+            "default": 100
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "provider",
+          "model"
+        ],
+        "title": "ModelInfo"
+      },
+      "ModelPolicy": {
+        "type": "string",
+        "enum": [
+          "LOCAL_ONLY",
+          "CHEAP_FAST",
+          "BALANCED",
+          "DEEP_REASONING",
+          "CODING",
+          "CUSTOM"
+        ],
+        "title": "ModelPolicy"
+      },
+      "PrivacyClass": {
+        "type": "string",
+        "enum": [
+          "PUBLIC_OR_GENERAL",
+          "PERSONAL",
+          "PRIVATE",
+          "WORK_RESTRICTED"
+        ],
+        "title": "PrivacyClass"
+      },
+      "ProjectSummary": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "project_alias": {
+            "type": "string",
+            "title": "Project Alias"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "project_type": {
+            "type": "string",
+            "enum": [
+              "work",
+              "personal"
+            ],
+            "title": "Project Type"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "blocked",
+              "paused",
+              "completed"
+            ],
+            "title": "Status"
+          },
+          "progress_signal": {
+            "type": "string",
+            "enum": [
+              "moved_forward",
+              "neutral",
+              "blocked"
+            ],
+            "title": "Progress Signal"
+          },
+          "session_summary": {
+            "type": "string",
+            "title": "Session Summary",
+            "default": ""
+          },
+          "accomplishments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Accomplishments",
+            "default": []
+          },
+          "blockers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Blockers",
+            "default": []
+          },
+          "next_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Next Actions",
+            "default": []
+          },
+          "decisions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Decisions",
+            "default": []
+          },
+          "attention_next_session": {
+            "type": "string",
+            "title": "Attention Next Session",
+            "default": ""
+          },
+          "needs_followup": {
+            "type": "boolean",
+            "title": "Needs Followup",
+            "default": false
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "default": []
+          },
+          "privacy_class": {
+            "$ref": "#/components/schemas/PrivacyClass",
+            "default": "WORK_RESTRICTED"
+          },
+          "raw": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_alias",
+          "generated_at",
+          "project_type",
+          "status",
+          "progress_signal"
+        ],
+        "title": "ProjectSummary"
+      },
+      "ProjectSummaryIn": {
+        "properties": {
+          "project_alias": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Project Alias"
+          },
+          "generated_at": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Generated At"
+          },
+          "project_type": {
+            "type": "string",
+            "enum": [
+              "work",
+              "personal"
+            ],
+            "title": "Project Type"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "blocked",
+              "paused",
+              "completed"
+            ],
+            "title": "Status"
+          },
+          "progress_signal": {
+            "type": "string",
+            "enum": [
+              "moved_forward",
+              "neutral",
+              "blocked"
+            ],
+            "title": "Progress Signal",
+            "default": "neutral"
+          },
+          "session_summary": {
+            "type": "string",
+            "maxLength": 8000,
+            "title": "Session Summary",
+            "default": ""
+          },
+          "accomplishments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 40,
+            "title": "Accomplishments"
+          },
+          "blockers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 40,
+            "title": "Blockers"
+          },
+          "next_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 40,
+            "title": "Next Actions"
+          },
+          "decisions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 40,
+            "title": "Decisions"
+          },
+          "attention_next_session": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Attention Next Session",
+            "default": ""
+          },
+          "needs_followup": {
+            "type": "boolean",
+            "title": "Needs Followup",
+            "default": false
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Tags"
+          },
+          "privacy_class": {
+            "$ref": "#/components/schemas/PrivacyClass",
+            "default": "WORK_RESTRICTED"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project_alias",
+          "generated_at",
+          "project_type",
+          "status"
+        ],
+        "title": "ProjectSummaryIn"
+      },
+      "ProjectSummaryIngestResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "project_alias": {
+            "type": "string",
+            "title": "Project Alias"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "project_alias"
+        ],
+        "title": "ProjectSummaryIngestResponse"
+      },
+      "RunIn": {
+        "properties": {
+          "task": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Task"
+          },
+          "task_category": {
+            "type": "string",
+            "maxLength": 80,
+            "title": "Task Category",
+            "default": "general"
+          },
+          "require_model": {
+            "type": "boolean",
+            "title": "Require Model",
+            "default": true
+          },
+          "async_run": {
+            "type": "boolean",
+            "title": "Async Run",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "task"
+        ],
+        "title": "RunIn"
+      },
+      "StructuredResult": {
+        "properties": {
+          "reply": {
+            "type": "string",
+            "title": "Reply"
+          },
+          "state_updates": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "State Updates",
+            "default": []
+          },
+          "facts_to_add": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Facts To Add",
+            "default": []
+          },
+          "facts_to_remove": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Facts To Remove",
+            "default": []
+          },
+          "tasks_to_create": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tasks To Create",
+            "default": []
+          },
+          "tasks_to_update": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tasks To Update",
+            "default": []
+          },
+          "events": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Events",
+            "default": []
+          },
+          "requires_confirmation": {
+            "type": "boolean",
+            "title": "Requires Confirmation",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "reply"
+        ],
+        "title": "StructuredResult"
+      },
+      "SystemStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "db": {
+            "type": "string",
+            "title": "Db"
+          },
+          "agents_by_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Agents By Status"
+          },
+          "time": {
+            "type": "string",
+            "title": "Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "service",
+          "db",
+          "agents_by_status",
+          "time"
+        ],
+        "title": "SystemStatus"
+      },
+      "Task": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "agent_id": {
+            "type": "string",
+            "title": "Agent Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "priority": {
+            "type": "integer",
+            "title": "Priority",
+            "default": 3
+          },
+          "due_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due At"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "agent_id",
+          "title",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "Task"
+      },
+      "TaskStatus": {
+        "type": "string",
+        "enum": [
+          "QUEUED",
+          "RUNNING",
+          "WAITING_FOR_USER",
+          "SUCCEEDED",
+          "FAILED",
+          "CANCELLED",
+          "OPEN",
+          "COMPLETED"
+        ],
+        "title": "TaskStatus"
+      },
+      "UnroutedMessageResponse": {
+        "properties": {
+          "intent": {
+            "type": "string",
+            "const": "unrouted",
+            "title": "Intent"
+          },
+          "response": {
+            "type": "string",
+            "title": "Response"
+          }
+        },
+        "type": "object",
+        "required": [
+          "intent",
+          "response"
+        ],
+        "title": "UnroutedMessageResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "description": "Server-side PAOS bearer token.",
+        "scheme": "bearer"
+      },
+      "CookieAuth": {
+        "type": "apiKey",
+        "description": "Server-side PAOS token cookie for trusted BFF/proxy use.",
+        "in": "cookie",
+        "name": "paos_token"
+      }
+    }
+  }
+}

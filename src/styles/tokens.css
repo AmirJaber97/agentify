@@ -1,0 +1,60 @@
+:root {
+  color-scheme: dark;
+
+  /* Layered dark surfaces — deepest at the app edge, lighter as elements rise */
+  --surface-0: #0a0d12;
+  --surface-1: #10151d;
+  --surface-2: #161d28;
+  --surface-3: #1e2733;
+  --surface-hover: #232e3d;
+
+  --border: #26303f;
+  --border-subtle: #1b2330;
+  --border-focus: #58a6ff;
+
+  --text-1: #e8edf4;
+  --text-2: #98a4b5;
+  --text-3: #647182;
+
+  --accent: #58a6ff;
+  --accent-dim: #316dcc;
+  --accent-surface: rgb(88 166 255 / 0.09);
+  --glow-accent: 0 0 14px rgb(88 166 255 / 0.22);
+
+  /* One hue per status family */
+  --status-idle: #7d8896;
+  --status-working: #58a6ff;
+  --status-waiting: #d29922;
+  --status-blocked: #f0883e;
+  --status-error: #f85149;
+  --status-disabled: #444c56;
+
+  --ok: #3fb950;
+  --ok-surface: rgb(63 185 80 / 0.12);
+  --warn: #d29922;
+  --warn-surface: rgb(210 153 34 / 0.12);
+  --danger: #f85149;
+  --danger-surface: rgb(248 81 73 / 0.12);
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 4px 16px rgb(0 0 0 / 0.45);
+  --shadow-3: 0 12px 40px rgb(0 0 0 / 0.55);
+
+  --shell-nav-width: 216px;
+  --shell-topbar-height: 52px;
+}
