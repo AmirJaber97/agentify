@@ -195,6 +195,9 @@
 
 /* ── Dialog ────────────────────────────────────────────── */
 .dialog {
+  /* margin:auto restores the browser's modal centering, which the global
+     `* { margin: 0 }` reset would otherwise cancel (pinning it top-left). */
+  margin: auto;
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -202,8 +205,9 @@
   color: var(--text-1);
   padding: 0;
   width: min(560px, calc(100vw - 32px));
-  animation: fade-up 150ms ease;
+  animation: dialog-pop 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+.dialog::backdrop { animation: backdrop-in 180ms ease; }
 .dialog--wide { width: min(760px, calc(100vw - 32px)); }
 .dialog__header {
   display: flex;

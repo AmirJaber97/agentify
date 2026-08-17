@@ -326,9 +326,12 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-3), var(--glow-accent);
   padding: 0;
-  margin-top: 10vh;
-  animation: fade-up 150ms ease;
+  /* top 10vh, horizontally centered — auto sides restore centering that the
+     global `* { margin: 0 }` reset cancels. */
+  margin: 10vh auto auto;
+  animation: dialog-pop 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+.command-bar::backdrop { animation: backdrop-in 180ms ease; }
 .command-bar__input-row {
   display: flex;
   align-items: center;

@@ -98,6 +98,16 @@ dialog::backdrop {
   to { opacity: 1; transform: none; }
 }
 
+@keyframes dialog-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

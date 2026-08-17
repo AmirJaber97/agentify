@@ -19,6 +19,7 @@ import { DataTable } from './DataTable';
 import { RowDrawer } from './RowDrawer';
 import { QuickFilters } from './QuickFilters';
 import { ConfigureViewDialog } from './ConfigureViewDialog';
+import { DatasetDashboard } from './DatasetDashboard';
 
 function toColumnFilters(map: FilterMap): ColumnFiltersState {
   return Object.entries(map).map(([id, value]) => ({ id, value }));
@@ -53,6 +54,7 @@ export function DatasetWorkbench({ agent, dataset, canEdit }: { agent: Agent; da
   const [activeView, setActiveView] = useState<string>('all');
   const [editPendingKey, setEditPendingKey] = useState<string | null>(null);
   const [clearEditToken, setClearEditToken] = useState(0);
+  const [mode, setMode] = useState<'table' | 'dashboard'>('table');
 
   const updateUi = useUpdateAgentUiMetadata(agent.id);
   const edit = useAgentDatasetEdit(agent.id);
@@ -163,49 +165,77 @@ export function DatasetWorkbench({ agent, dataset, canEdit }: { agent: Agent; da
           ))}
         </div>
         <div className="dataset-wb__tools">
-          <input
-            className="input dataset-wb__search"
-            type="search"
-            placeholder="Search…"
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            aria-label={`Search ${dataset.label}`}
-          />
-          {activeFilterCount > 0 && (
-            <Button size="sm" variant="ghost" onClick={() => applySavedView(null)}>
-              Clear ({activeFilterCount})
-            </Button>
+          <div className="view-toggle" role="group" aria-label="Table or dashboard">
+            <button
+              type="button"
+              className={clsx('view-toggle__btn', mode === 'table' && 'view-toggle__btn--active')}
+              aria-pressed={mode === 'table'}
+              onClick={() => setMode('table')}
+            >
+              ☰ Table
+            </button>
+            <button
+              type="button"
+              className={clsx('view-toggle__btn', mode === 'dashboard' && 'view-toggle__btn--active')}
+              aria-pressed={mode === 'dashboard'}
+              onClick={() => setMode('dashboard')}
+            >
+              📊 Dashboard
+            </button>
+          </div>
+          {mode === 'table' && (
+            <>
+              <input
+                className="input dataset-wb__search"
+                type="search"
+                placeholder="Search…"
+                value={globalFilter}
+                onChange={(e) => setGlobalFilter(e.target.value)}
+                aria-label={`Search ${dataset.label}`}
+              />
+              {activeFilterCount > 0 && (
+                <Button size="sm" variant="ghost" onClick={() => applySavedView(null)}>
+                  Clear ({activeFilterCount})
+                </Button>
+              )}
+              <Button size="sm" variant="ghost" onClick={saveCurrentAsView} disabled={updateUi.isPending}>
+                Save view
+              </Button>
+              <Button size="sm" onClick={() => setConfigOpen(true)}>
+                Configure
+              </Button>
+            </>
           )}
-          <Button size="sm" variant="ghost" onClick={saveCurrentAsView} disabled={updateUi.isPending}>
-            Save view
-          </Button>
-          <Button size="sm" onClick={() => setConfigOpen(true)}>
-            Configure
-          </Button>
         </div>
       </div>
 
-      <QuickFilters columns={resolved.visibleColumns} filters={columnFilters} onChange={setColumnFilters} />
+      {mode === 'dashboard' ? (
+        <DatasetDashboard dataset={dataset} />
+      ) : (
+        <>
+          <QuickFilters columns={resolved.visibleColumns} filters={columnFilters} onChange={setColumnFilters} />
 
-      <div className="dataset-wb__count">
-        {dataset.rows.length} record{dataset.rows.length === 1 ? '' : 's'}
-      </div>
+          <div className="dataset-wb__count">
+            {dataset.rows.length} record{dataset.rows.length === 1 ? '' : 's'}
+          </div>
 
-      <DataTable
-        columns={resolved.orderedColumns}
-        rows={dataset.rows}
-        rowKey={rowIdentity}
-        sorting={sorting}
-        onSortingChange={setSorting}
-        columnVisibility={columnVisibility}
-        columnFilters={columnFilters}
-        onColumnFiltersChange={setColumnFilters}
-        globalFilter={globalFilter}
-        columnSizing={columnSizing}
-        onColumnSizingChange={setColumnSizing}
-        pinned={resolved.pinnedColumns}
-        onRowClick={(row) => setSelectedKey(rowIdentity(row, dataset.rows.indexOf(row)))}
-      />
+          <DataTable
+            columns={resolved.orderedColumns}
+            rows={dataset.rows}
+            rowKey={rowIdentity}
+            sorting={sorting}
+            onSortingChange={setSorting}
+            columnVisibility={columnVisibility}
+            columnFilters={columnFilters}
+            onColumnFiltersChange={setColumnFilters}
+            globalFilter={globalFilter}
+            columnSizing={columnSizing}
+            onColumnSizingChange={setColumnSizing}
+            pinned={resolved.pinnedColumns}
+            onRowClick={(row) => setSelectedKey(rowIdentity(row, dataset.rows.indexOf(row)))}
+          />
+        </>
+      )}
 
       <RowDrawer
         open={selectedRecord !== null}

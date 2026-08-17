@@ -254,6 +254,70 @@
   .wb-field { grid-template-columns: 1fr; gap: 2px; }
 }
 
+/* ── Auto dashboard ────────────────────────────────────── */
+.dash { display: flex; flex-direction: column; gap: var(--space-4); }
+.dash__meta { font-size: 11px; color: var(--text-3); }
+.dash-section { display: flex; flex-direction: column; gap: var(--space-3); }
+.dash-section__title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+}
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-3); }
+.dash-grid--wide { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+.dash-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  min-width: 0;
+  animation: fade-up 200ms ease;
+}
+.dash-card--wide { grid-column: span 1; }
+.dash-card--center { align-items: center; text-align: center; }
+.dash-card__label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em; }
+.dash-card__value { font-family: var(--font-mono); font-size: 26px; color: var(--text-1); line-height: 1.1; }
+.dash-card__value--sm { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.dash-card__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
+.dash-card__foot { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.dash-card__sub { font-size: 11px; color: var(--text-3); }
+.dash-card__spark { margin-top: 2px; }
+
+.dash-delta { font-size: 11px; font-weight: 600; font-family: var(--font-mono); }
+.dash-delta--up { color: var(--ok); }
+.dash-delta--down { color: var(--status-blocked); }
+.dash-delta--flat { color: var(--text-3); }
+
+.chart-line { width: 100%; height: 64px; }
+.chart-spark { width: 80px; height: 22px; }
+.chart-gauge { width: 80px; height: 80px; }
+.chart-gauge__value { font-family: var(--font-mono); font-size: 16px; font-weight: 600; fill: var(--text-1); }
+.chart-gauge__target { font-family: var(--font-mono); font-size: 9px; fill: var(--text-3); }
+
+.chart-progress { display: flex; align-items: center; gap: var(--space-2); }
+.chart-progress__track { flex: 1; height: 8px; background: var(--surface-3); border-radius: 4px; overflow: hidden; }
+.chart-progress__fill { height: 100%; border-radius: 4px; transition: width 300ms ease; }
+.chart-progress__label { font-size: 11px; color: var(--text-2); }
+
+.chart-dist { display: flex; flex-direction: column; gap: 5px; }
+.chart-dist__row { display: grid; grid-template-columns: 90px 1fr 28px; align-items: center; gap: var(--space-2); font-size: 12px; }
+.chart-dist__name { color: var(--text-2); text-transform: capitalize; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chart-dist__bar { height: 8px; background: var(--surface-3); border-radius: 4px; overflow: hidden; }
+.chart-dist__fill { display: block; height: 100%; background: var(--accent-dim); border-radius: 4px; }
+.chart-dist__count { color: var(--text-2); text-align: right; }
+.chart-dist__total { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-card { animation: none; }
+  .chart-progress__fill { transition: none; }
+}
+
 /* ── Current state card ────────────────────────────────── */
 .current-state { display: flex; flex-direction: column; gap: 2px; }
 .current-state__item {

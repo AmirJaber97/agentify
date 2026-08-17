@@ -1,44 +1,98 @@
 import type { AgentState } from '../types';
 import { hoursAgo, daysAgo } from './time';
 
+function healthDay(
+  ago: number,
+  o: { weight: number; change: number; sleep: number; glasses: number; mainC: number; warm: number; stretch: number; done: boolean },
+): Record<string, unknown> {
+  const at = hoursAgo(ago * 24 + 3);
+  const date = daysAgo(ago).slice(0, 10);
+  const meals = [
+    { breakfast: '2 cooked eggs in coconut oil with half a baked beet', lunch: 'yakhanet fasolia', dinner: 'oven-baked chicken wings, mashed potatoes, salad' },
+    { breakfast: '3 сирники and coffee', lunch: 'grilled chicken and rice', dinner: 'lentil soup and bread' },
+    { breakfast: '2 eggs cooked in butter', lunch: 'beef stew', dinner: 'salad and yogurt' },
+    { breakfast: 'omelette', lunch: 'fish and potatoes', dinner: 'soup' },
+    { breakfast: 'skipped', lunch: 'shawarma', dinner: 'pasta' },
+  ][ago] ?? { breakfast: 'eggs', lunch: 'chicken', dinner: 'soup' };
+  return {
+    id: `rec-${ago}`,
+    date,
+    source: 'telegram',
+    created_at: at,
+    updated_at: at,
+    diet: {
+      adherence: null,
+      status: 'reported',
+      breakfast: meals.breakfast,
+      lunch: meals.lunch,
+      dinner: meals.dinner,
+      calories: null,
+      protein_g: null,
+      notes: 'Daily report imported.',
+      source: 'telegram',
+      updated_at: at,
+    },
+    sleep: { hours: o.sleep, notes: 'Daily report sleep.', source: 'telegram', updated_at: at },
+    water: { glasses: o.glasses, target_glasses: 8, notes: `${o.glasses}/8 glasses.`, source: 'telegram', updated_at: at },
+    weight: {
+      value: o.weight,
+      unit: 'kg',
+      change_from_start: o.change,
+      change_unit: 'kg',
+      notes: 'Daily report weight.',
+      source: 'telegram',
+      updated_at: at,
+    },
+    workout: {
+      type: o.done ? 'Home workout' : 'Rest day',
+      status: o.done ? 'completed' : 'skipped',
+      planned: true,
+      duration_minutes: o.done ? 30 : null,
+      exercises: o.done ? ['Bodyweight Squat', 'Push-up', 'Reverse Lunge', 'Glute Bridge', 'Plank'] : [],
+      warm_up_completed: o.warm,
+      warm_up_total: 5,
+      main_completed: o.mainC,
+      main_total: 6,
+      stretching_completed: o.stretch,
+      stretching_total: 5,
+      notes: o.done ? 'Home workout completed.' : 'Rest day.',
+      source: 'telegram',
+      updated_at: at,
+    },
+    observations: [
+      { id: `obs-${ago}`, date, text: 'Daily report imported from Telegram.', source: 'telegram', created_at: at },
+    ],
+  };
+}
+
 export const fixtureStates: Record<string, AgentState> = {
   health: {
     agent_id: 'health',
     stable_facts: {
       height_cm: 178,
-      training_style: 'push/pull/legs, 5 days a week',
+      training_style: 'home + basement gym',
       dietary_constraints: 'no pork, high protein target',
-      gym: 'Basement gym — full rack, dumbbells to 40kg',
+      start_weight_kg: 95.8,
     },
     current_state: {
-      goal: 'Recomp: hold ~78kg while adding strength',
-      plan: 'Hypertrophy block, week 6 of 8',
-      next_workout: 'Push day — bench focus',
-      diet_adherence_week: 0.86,
-      workout_streak_days: 11,
-      todays_state: 'Slept 7h, mild shoulder tightness — warm up longer',
+      current_focus: '2026-08-17 report imported: home workout complete, diet reported',
+      diet_details_pending: false,
+      last_reported_date: daysAgo(0).slice(0, 10),
+      last_weight_kg: 95,
+      last_workout_completed_at: hoursAgo(3),
     },
+    // Real PAOS Health schema: one nested record per day (diet/sleep/water/
+    // weight/workout objects). Discovered generically as "Daily Records".
     structured_data: {
-      workouts: [
-        { date: daysAgo(1), type: 'Pull', duration_min: 62, notes: 'Rows felt strong, +2.5kg' },
-        { date: daysAgo(2), type: 'Legs', duration_min: 70, notes: 'Squat 3x5 @ 110kg' },
-        { date: daysAgo(4), type: 'Push', duration_min: 58, notes: 'Bench 3x5 @ 87.5kg' },
-        { date: daysAgo(5), type: 'Pull', duration_min: 60, notes: '' },
-        { date: daysAgo(7), type: 'Legs', duration_min: 65, notes: 'Deload squats' },
-      ],
-      measurements: [
-        { date: daysAgo(28), weight_kg: 79.1 },
-        { date: daysAgo(21), weight_kg: 78.8 },
-        { date: daysAgo(14), weight_kg: 78.5 },
-        { date: daysAgo(7), weight_kg: 78.2 },
-        { date: daysAgo(1), weight_kg: 78.0 },
-      ],
-      observations: [
-        'Bench progressing again after switching to 3x5',
-        'Protein intake dips on weekends — plan Saturday lunch ahead',
+      daily_records: [
+        healthDay(0, { weight: 95, change: -0.8, sleep: 8, glasses: 7, mainC: 6, warm: 5, stretch: 5, done: true }),
+        healthDay(1, { weight: 95.2, change: -0.6, sleep: 8, glasses: 8, mainC: 6, warm: 5, stretch: 5, done: true }),
+        healthDay(2, { weight: 95.4, change: -0.4, sleep: 7, glasses: 6, mainC: 4, warm: 5, stretch: 3, done: true }),
+        healthDay(3, { weight: 95.5, change: -0.3, sleep: 7, glasses: 8, mainC: 6, warm: 5, stretch: 5, done: true }),
+        healthDay(4, { weight: 95.8, change: 0, sleep: 6, glasses: 5, mainC: 0, warm: 0, stretch: 0, done: false }),
       ],
     },
-    updated_at: hoursAgo(5),
+    updated_at: hoursAgo(0.15),
   },
   media: {
     agent_id: 'media',
