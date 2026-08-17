@@ -1,6 +1,5 @@
-import { spawn } from 'node:child_process';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { existsSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import type { Handler } from 'hono';
 import type { Config } from './config';
 
@@ -14,6 +13,10 @@ function verifyGitHubSignature(secret: string, body: string, signature: string |
 
 function deployScriptPath(): string {
   return `${process.cwd()}/scripts/deploy-from-webhook.sh`;
+}
+
+function deployTriggerPath(): string {
+  return `${process.cwd()}/.git/webhook-deploy.trigger`;
 }
 
 export function githubWebhookHandler(config: Config): Handler {
@@ -57,19 +60,18 @@ export function githubWebhookHandler(config: Config): Handler {
       return c.json({ detail: { error: 'deploy_script_missing' } }, 500);
     }
 
-    const child = spawn(script, [], {
-      cwd: process.cwd(),
-      detached: true,
-      stdio: 'ignore',
-      env: {
-        ...process.env,
-        GITHUB_DELIVERY_ID: delivery,
-        GITHUB_AFTER_SHA: payload.after ?? '',
-      },
-    });
-    child.unref();
+    // Do not run the deploy as a child of agentify.service: that service is
+    // sandboxed with NoNewPrivileges=true, so sudo/systemctl restart is blocked
+    // and any child can be killed when the BFF restarts. Instead, write a tiny
+    // trigger file watched by a root-owned systemd .path unit. The deploy then
+    // runs out-of-band and can restart this service after rebuilding.
+    writeFileSync(
+      deployTriggerPath(),
+      `${JSON.stringify({ delivery, after: payload.after ?? '', ref: payload.ref, requested_at: new Date().toISOString() })}\n`,
+      'utf8',
+    );
 
-    console.log(`[agentify] GitHub push webhook accepted delivery=${delivery || 'unknown'} after=${payload.after ?? 'unknown'}`);
-    return c.json({ ok: true, accepted: true, event, delivery, ref: payload.ref, after: payload.after });
+    console.log(`[agentify] GitHub push webhook accepted delivery=${delivery || 'unknown'} after=${payload.after ?? 'unknown'}; deploy trigger written`);
+    return c.json({ ok: true, accepted: true, triggered: true, event, delivery, ref: payload.ref, after: payload.after });
   };
 }
