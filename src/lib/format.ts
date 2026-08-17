@@ -9,12 +9,14 @@ export function formatRelative(iso: string): string {
   const hour = 60 * minute;
   const day = 24 * hour;
 
+  // Beyond ~30 days, show the absolute date with no relative suffix.
+  if (abs >= 30 * day) return new Date(then).toLocaleDateString();
+
   let text: string;
   if (abs < minute) text = 'just now';
   else if (abs < hour) text = `${Math.floor(abs / minute)}m`;
   else if (abs < day) text = `${Math.floor(abs / hour)}h`;
-  else if (abs < 30 * day) text = `${Math.floor(abs / day)}d`;
-  else text = new Date(then).toLocaleDateString();
+  else text = `${Math.floor(abs / day)}d`;
 
   if (text === 'just now') return future ? 'now' : text;
   return future ? `in ${text}` : `${text} ago`;

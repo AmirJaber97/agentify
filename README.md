@@ -138,6 +138,16 @@ location /api/stream {
 
 Deploy: `git pull && npm ci && npm run gen:types && npm run build && sudo systemctl restart agentify`.
 
+## Data workbench & HQ
+
+**Agent state is the database; Agentify is the interface over it.**
+
+- **Generic Data Workbench** (`src/lib/dataset.ts`, `src/components/workbench/`): any array-of-objects found in `structured_data` is discovered automatically and rendered as an interactive table — search, multi-sort, quick filters, column show/hide/reorder/resize, pagination, and a polished row-detail drawer. Cell rendering is inferred per column (enum badges, booleans, numbers, dates, URLs, tags, long text). A new agent that stores a new collection needs **zero** Agentify code changes.
+- **View configuration** lives in `Agent.ui_metadata.agentify.views` (durable, cross-device) and is always merged over auto-generated defaults. Domain data in `structured_data` is never touched by presentation config. Saved views capture search + filters + sort.
+- **Editing**: PAOS v1 has no deterministic structured-write endpoint, so edits are encapsulated in `src/lib/agentEdit.ts` — a field change becomes a precise instruction sent to the owning agent (`POST /agents/{id}/message`), which validates/persists it; the UI then refetches canonical state via SSE. Nothing is optimistically faked.
+- **HQ** (`src/features/hq/`): a "quiet control room" of per-agent workstations rendered as original SVG (no bespoke art per agent — themed from category/icon). Animation strictly reflects real backend status (idle breathing, working glow/type, waiting notification, blocked/error warning, disabled dimmed), pauses when the tab is hidden, and freezes under `prefers-reduced-motion`. Toggle HQ/List on the Agents page (preference persisted in localStorage).
+- Agent cards, HQ pods and ⌘K record search all derive summaries from real structured data (never fabricated).
+
 ## Realtime behavior
 
 - The browser opens `EventSource('/api/stream')`; the session cookie rides along
@@ -234,5 +244,11 @@ production server (`npm start`) serving SPA + deep links + SSE.
 - No `Last-Event-ID` resume in v1 — reconnects refetch everything (cheap at this scale).
 - `requires_confirmation` has no confirm endpoint in v1; the UI surfaces the banner
   and directs you to reply to the agent.
+- **No deterministic structured-state write endpoint in v1** — workbench edits go
+  through agent messages (deterministic for Media/Health fast-paths, model-mediated
+  otherwise). A `PATCH /agents/{id}/state` (or similar) would make edits fully
+  reliable and is the main backend capability worth adding next.
+- ⌘K record search reads only agent states already in the query cache (warm after
+  visiting HQ/an agent); it opens the owning agent, not yet the specific row.
 - Single-user by design: one password, one session audience, matching PAOS's
   single-tenant model.

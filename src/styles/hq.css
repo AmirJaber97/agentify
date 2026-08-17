@@ -1,0 +1,173 @@
+/* ── Agent HQ ──────────────────────────────────────────── */
+.hq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.hq-pod {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  color: inherit;
+  transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+.hq-pod:hover,
+.hq-pod:focus-visible {
+  text-decoration: none;
+  border-color: var(--border);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+}
+.hq-pod__art {
+  background: radial-gradient(120% 90% at 50% 0%, var(--surface-3), var(--surface-1));
+  border-bottom: 1px solid var(--border-subtle);
+}
+.hq-pod__art svg { display: block; width: 100%; height: auto; }
+.hq-pod__body { padding: var(--space-3) var(--space-4) var(--space-4); display: flex; flex-direction: column; gap: 6px; }
+.hq-pod__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.hq-pod__name { font-weight: 600; font-size: 14px; }
+.hq-pod__focus {
+  font-size: 12px;
+  color: var(--text-2);
+  border-left: 2px solid var(--border);
+  padding-left: var(--space-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hq-pod__meta { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
+.hq-pod__summary { font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.hq-pod__warn { font-size: 11px; color: var(--warn); }
+
+/* hover detail card */
+.hq-pod__hover {
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: var(--space-3);
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-3);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 4;
+}
+.hq-pod:hover .hq-pod__hover,
+.hq-pod:focus-visible .hq-pod__hover { opacity: 1; transform: none; }
+.hq-pod__hover-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.hq-pod__hover-purpose { font-size: 12px; color: var(--text-2); }
+.hq-pod__hover-line { font-size: 11px; color: var(--text-3); }
+.hq-pod__hover-warn { font-size: 11px; color: var(--warn); }
+
+/* ── Workstation SVG ───────────────────────────────────── */
+.hq-ws__bg { fill: var(--surface-1); stroke: var(--border-subtle); }
+.hq-ws__floor { stroke: var(--border-subtle); stroke-width: 1; }
+.hq-ws__screen { fill: #0a0d12; stroke: var(--border); stroke-width: 1; }
+.hq-ws__screen-glow { fill: none; opacity: 0; }
+.hq-ws__emoji { font-size: 22px; }
+.hq-ws__stand { fill: var(--surface-3); }
+.hq-ws__desk { fill: var(--surface-3); stroke: var(--border-subtle); stroke-width: 0.5; }
+.hq-ws__head { fill: var(--text-2); }
+.hq-ws__shadow { fill: #000; opacity: 0.25; }
+.hq-ws__hands { opacity: 0.9; }
+.hq-ws__light { }
+.hq-ws__light-ring { fill: none; stroke-width: 2; opacity: 0; }
+.hq-ws__notify-text { font-size: 11px; font-weight: 700; fill: #0a0d12; }
+
+/* status transforms on the SVG root */
+.hq-ws { display: block; }
+.hq-ws__figure { transform-box: fill-box; transform-origin: center; }
+.hq-ws__torso { transform-box: fill-box; transform-origin: center bottom; }
+.hq-ws__hands { transform-box: fill-box; transform-origin: center; }
+
+/* IDLE — slow breathing */
+.hq-ws--idle .hq-ws__torso { animation: ws-breathe 4.5s ease-in-out infinite; }
+
+/* WORKING — screen glow, active light ring, typing hands */
+.hq-ws--working .hq-ws__screen-glow { animation: ws-glow 2s ease-in-out infinite; }
+.hq-ws--working .hq-ws__light-ring { animation: ws-ping 1.8s ease-out infinite; }
+.hq-ws--working .hq-ws__hands { animation: ws-type 0.5s steps(2) infinite; }
+.hq-ws--working .hq-ws__torso { animation: ws-lean 2s ease-in-out infinite; }
+
+/* WAITING — pulsing light + blinking notification */
+.hq-ws--waiting .hq-ws__light { animation: ws-blink 1.4s ease-in-out infinite; }
+.hq-ws--waiting .hq-ws__notify { animation: ws-blink 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.hq-ws--waiting .hq-ws__torso { animation: ws-breathe 4.5s ease-in-out infinite; }
+
+/* BLOCKED / ERROR — warning pulse, no busy motion */
+.hq-ws--blocked .hq-ws__warn,
+.hq-ws--error .hq-ws__warn { animation: ws-blink 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+/* DISABLED — dimmed, static */
+.hq-ws--disabled { opacity: 0.42; filter: grayscale(0.7); }
+
+@keyframes ws-breathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.04) translateY(-0.5px); }
+}
+@keyframes ws-lean {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(1px); }
+}
+@keyframes ws-type {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-1.5px); }
+}
+@keyframes ws-glow {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.7; }
+}
+@keyframes ws-ping {
+  0% { opacity: 0.7; transform: scale(1); transform-box: fill-box; transform-origin: center; }
+  100% { opacity: 0; transform: scale(2.4); transform-box: fill-box; transform-origin: center; }
+}
+@keyframes ws-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Pause when tab hidden */
+.hq--paused .hq-ws * { animation-play-state: paused !important; }
+
+/* Respect reduced motion — freeze to a calm static pose */
+@media (prefers-reduced-motion: reduce) {
+  .hq-ws * { animation: none !important; }
+  .hq-ws--working .hq-ws__screen-glow { opacity: 0.4; }
+  .hq-ws--working .hq-ws__light-ring,
+  .hq-ws--waiting .hq-ws__light-ring { opacity: 0.5; }
+}
+
+/* ── View toggle ───────────────────────────────────────── */
+.view-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.view-toggle__btn {
+  padding: 5px 12px;
+  border: none;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.view-toggle__btn + .view-toggle__btn { border-left: 1px solid var(--border); }
+.view-toggle__btn--active { background: var(--accent-surface); color: var(--accent); }
+
+/* On small screens HQ stays usable but compact */
+@media (max-width: 560px) {
+  .hq-grid { grid-template-columns: 1fr; }
+}

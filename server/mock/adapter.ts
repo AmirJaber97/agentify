@@ -106,12 +106,20 @@ export function mockAdapter(store: MockStore, stream: MockStream): Hono {
     const lower = text.toLowerCase();
     const state = store.states['media'];
     if (!state) return null;
-    const library = (state.structured_data as { library?: Array<Record<string, unknown>> }).library ?? [];
-    const found = library.find((e) => lower.includes(String(e.title ?? '').toLowerCase()));
+    const items = (state.structured_data as { items?: Array<Record<string, unknown>> }).items ?? [];
+    const found = items.find((e) => lower.includes(String(e.title ?? '').toLowerCase()));
     if (!found) return null;
 
     let action: string | null = null;
-    if (/\bpause[d]?\b/.test(lower)) {
+    // Explicit "set status to X" (from the workbench edit instructions).
+    const statusSet = lower.match(/status to (\w+)/);
+    const episodeSet = lower.match(/episode to (\d+)/);
+    const seasonSet = lower.match(/season to (\d+)/);
+    const ratingSet = lower.match(/rating to (\d{1,2})/);
+    if (statusSet) {
+      found.status = statusSet[1]!;
+      action = `now ${statusSet[1]}`;
+    } else if (/\bpause[d]?\b/.test(lower)) {
       found.status = 'paused';
       action = 'paused';
     } else if (/watched|next episode/.test(lower)) {
@@ -128,7 +136,15 @@ export function mockAdapter(store: MockStore, stream: MockStream): Hono {
       found.status = 'watching';
       action = 'resumed';
     }
-    const ratingMatch = lower.match(/rate\s+.*?(\d{1,2})/);
+    if (episodeSet) {
+      found.episode = Number(episodeSet[1]);
+      action = action ?? `episode ${episodeSet[1]}`;
+    }
+    if (seasonSet) {
+      found.season = Number(seasonSet[1]);
+      action = action ?? `season ${seasonSet[1]}`;
+    }
+    const ratingMatch = ratingSet ?? lower.match(/rate\s+.*?(\d{1,2})/);
     if (ratingMatch) {
       found.rating = Number(ratingMatch[1]);
       action = action ?? `rated ${found.rating}/10`;

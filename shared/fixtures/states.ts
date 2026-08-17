@@ -47,18 +47,21 @@ export const fixtureStates: Record<string, AgentState> = {
       preferences: 'Slow-burn sci-fi, prestige drama, no reality TV',
     },
     current_state: {
-      currently_watching: 'The Expanse S3',
-      last_action: 'Paused Severance at S2E4',
+      current_focus: 'The Expanse — watching S3E7',
+      last_updated_at: hoursAgo(26),
     },
+    // Real PAOS Media schema: structured_data.items (discovered generically).
     structured_data: {
-      library: [
-        { title: 'The Expanse', type: 'series', status: 'watching', season: 3, episode: 7, rating: null, thoughts: 'Book 3 arc landing well', updated_at: hoursAgo(26) },
-        { title: 'Severance', type: 'series', status: 'paused', season: 2, episode: 4, rating: null, thoughts: 'Waiting for a free weekend to binge', updated_at: daysAgo(9) },
-        { title: 'Dune: Part Two', type: 'film', status: 'planned', season: null, episode: null, rating: null, thoughts: '', updated_at: daysAgo(12) },
-        { title: 'Blue Eye Samurai', type: 'series', status: 'planned', season: 1, episode: null, rating: null, thoughts: 'Recommended by Sam', updated_at: daysAgo(20) },
-        { title: 'Shōgun', type: 'series', status: 'completed', season: 1, episode: 10, rating: 9, thoughts: 'Best thing this year', updated_at: daysAgo(30) },
-        { title: 'The Bear', type: 'series', status: 'completed', season: 3, episode: 10, rating: 7, thoughts: 'S3 weaker than S2', updated_at: daysAgo(45) },
-        { title: 'Rings of Power', type: 'series', status: 'dropped', season: 2, episode: 3, rating: 4, thoughts: 'Not landing', updated_at: daysAgo(50) },
+      items: [
+        { title: 'The Expanse', type: 'series', status: 'watching', season: 3, episode: 7, rating: null, reaction: 'hooked', thoughts: 'Book 3 arc landing well', source: 'plex', date_started: daysAgo(20), date_completed: '', updated_at: hoursAgo(26) },
+        { title: 'Severance', type: 'series', status: 'paused', season: 2, episode: 4, rating: null, reaction: 'intrigued', thoughts: 'Waiting for a free weekend to binge', source: 'apple tv+', date_started: daysAgo(40), date_completed: '', updated_at: daysAgo(9) },
+        { title: 'Dune: Part Two', type: 'movie', status: 'planned', season: null, episode: null, rating: null, reaction: '', thoughts: '', source: 'telegram', date_started: '', date_completed: '', updated_at: daysAgo(12) },
+        { title: 'Blue Eye Samurai', type: 'anime', status: 'planned', season: 1, episode: null, rating: null, reaction: '', thoughts: 'Recommended by Sam', source: 'netflix', date_started: '', date_completed: '', updated_at: daysAgo(20) },
+        { title: 'Frieren', type: 'anime', status: 'watching', season: 1, episode: 18, rating: null, reaction: 'loving it', thoughts: 'Gorgeous pacing', source: 'crunchyroll', date_started: daysAgo(15), date_completed: '', updated_at: daysAgo(2) },
+        { title: 'Shōgun', type: 'series', status: 'completed', season: 1, episode: 10, rating: 9, reaction: 'blown away', thoughts: 'Best thing this year', source: 'disney+', date_started: daysAgo(60), date_completed: daysAgo(30), updated_at: daysAgo(30) },
+        { title: 'The Bear', type: 'series', status: 'completed', season: 3, episode: 10, rating: 7, reaction: 'mixed', thoughts: 'S3 weaker than S2', source: 'disney+', date_started: daysAgo(80), date_completed: daysAgo(45), updated_at: daysAgo(45) },
+        { title: 'Pentiment', type: 'game', status: 'completed', season: null, episode: null, rating: 8, reaction: 'thoughtful', thoughts: 'Beautiful narrative adventure', source: 'game pass', date_started: daysAgo(70), date_completed: daysAgo(52), updated_at: daysAgo(52) },
+        { title: 'Rings of Power', type: 'series', status: 'dropped', season: 2, episode: 3, rating: 4, reaction: 'bored', thoughts: 'Not landing for me', source: 'prime', date_started: daysAgo(58), date_completed: '', updated_at: daysAgo(50) },
       ],
     },
     updated_at: hoursAgo(26),
@@ -109,12 +112,16 @@ export const fixtureStates: Record<string, AgentState> = {
     },
     current_state: {
       last_visit: 'Kavarna Marks — flat white, excellent',
+      places_logged: 6,
     },
+    // Arbitrary custom dataset — proves the workbench needs no per-agent code.
     structured_data: {
       places: [
-        { name: 'Kavarna Marks', kind: 'café', ordered: 'Flat white', verdict: 'excellent', revisit: true, visited_at: daysAgo(2) },
-        { name: 'Botanika', kind: 'café', ordered: 'Cortado + banana bread', verdict: 'good', revisit: true, visited_at: daysAgo(6) },
-        { name: 'Trattoria Nino', kind: 'restaurant', ordered: 'Cacio e pepe', verdict: 'mixed', revisit: false, visited_at: daysAgo(11) },
+        { name: 'Kavarna Marks', kind: 'café', ordered: 'Flat white', verdict: 'excellent', rating: 9, revisit: true, price_eur: 3.4, tags: ['quiet', 'wifi'], url: 'https://maps.example.com/kavarna', visited_at: daysAgo(2) },
+        { name: 'Botanika', kind: 'café', ordered: 'Cortado + banana bread', verdict: 'good', rating: 7, revisit: true, price_eur: 5.5, tags: ['brunch', 'plants'], url: 'https://maps.example.com/botanika', visited_at: daysAgo(6) },
+        { name: 'Trattoria Nino', kind: 'restaurant', ordered: 'Cacio e pepe', verdict: 'mixed', rating: 5, revisit: false, price_eur: 18, tags: ['pasta'], url: '', visited_at: daysAgo(11) },
+        { name: 'Roasters Guild', kind: 'café', ordered: 'Pour-over Ethiopia', verdict: 'excellent', rating: 9, revisit: true, price_eur: 4.2, tags: ['specialty', 'no wifi'], url: 'https://maps.example.com/roasters', visited_at: daysAgo(16) },
+        { name: 'Corner Diner', kind: 'restaurant', ordered: 'Breakfast burrito', verdict: 'good', rating: 6, revisit: true, price_eur: 11, tags: ['breakfast'], url: '', visited_at: daysAgo(21) },
       ],
     },
     updated_at: daysAgo(2),

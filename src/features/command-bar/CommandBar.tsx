@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import type { MessageResponse } from '@shared/types';
 import { useSendMessage } from '@/api/mutations';
 import { ApiError } from '@/api/errors';
 import { Spinner } from '@/components/ui';
 import { MessageResponseView } from './MessageResponseView';
+import { searchRecords } from './recordSearch';
+import { EnumBadge } from '@/components/workbench/cells';
 
 const EXAMPLES = [
   'Ask media what I am watching',
@@ -20,6 +23,9 @@ export function CommandBar({ open, onClose }: { open: boolean; onClose: () => vo
   const [response, setResponse] = useState<MessageResponse | null>(null);
   const send = useSendMessage();
   const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  const recordHits = useMemo(() => (response ? [] : searchRecords(qc, text)), [text, response, qc]);
 
   useEffect(() => {
     const dialog = ref.current;
@@ -101,8 +107,34 @@ export function CommandBar({ open, onClose }: { open: boolean; onClose: () => vo
             }}
           />
         )}
+        {!response && !send.isPending && recordHits.length > 0 && (
+          <div className="command-bar__records">
+            <div className="command-bar__section-label">Records</div>
+            {recordHits.map((hit, i) => (
+              <button
+                key={`${hit.agentId}-${hit.primary}-${i}`}
+                type="button"
+                className="command-bar__record"
+                onClick={() => {
+                  onClose();
+                  navigate(`/agents/${hit.agentId}`);
+                }}
+              >
+                <span className="command-bar__record-main">
+                  <span className="command-bar__record-agent mono">{hit.agentLabel}</span>
+                  <span aria-hidden="true">→</span>
+                  <span>{hit.primary}</span>
+                </span>
+                <EnumBadge value={hit.secondary} />
+              </button>
+            ))}
+          </div>
+        )}
         {!response && !send.isPending && !send.isError && (
           <div className="command-bar__hints">
+            {recordHits.length === 0 && text.trim().length >= 2 && (
+              <div className="command-bar__section-label">Press Enter to ask Hermes</div>
+            )}
             {EXAMPLES.map((ex) => (
               <button key={ex} type="button" className="command-bar__hint" onClick={() => setText(ex)}>
                 ❯ {ex}

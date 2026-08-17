@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import clsx from 'clsx';
+import type { Agent } from '@shared/types';
 import { useAgent, useAgentActivity, useAgentState, useAgentTasks } from '@/api/queries';
 import { useArchiveAgent, usePatchAgent, useRunAgent } from '@/api/mutations';
 import { Badge, Button, EmptyState, ErrorState, KeyValueList, Panel, Skeleton, Spinner } from '@/components/ui';
@@ -13,12 +14,12 @@ import { toast } from '@/components/Toast';
 import { formatDuration } from '@/lib/format';
 import { MessageComposer } from './MessageComposer';
 import { EditAgentDialog } from './EditAgentDialog';
-import { getAgentLayout } from '@/features/agent-layouts/registry';
+import { CurrentStateCard } from './CurrentStateCard';
+import { AgentWorkbench } from '@/features/agent-layouts/AgentWorkbench';
 
 function RunPanel({ agentId }: { agentId: string }) {
   const [task, setTask] = useState('');
   const run = useRunAgent(agentId);
-
   return (
     <div className="composer">
       <form
@@ -26,19 +27,10 @@ function RunPanel({ agentId }: { agentId: string }) {
         onSubmit={(e) => {
           e.preventDefault();
           if (!task.trim() || run.isPending) return;
-          run.mutate(task.trim(), {
-            onSuccess: () => setTask(''),
-          });
+          run.mutate(task.trim(), { onSuccess: () => setTask('') });
         }}
       >
-        <textarea
-          className="textarea"
-          placeholder="Describe a task to execute now…"
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-          aria-label="Task description"
-          rows={2}
-        />
+        <textarea className="textarea" placeholder="Describe a task to execute now…" value={task} onChange={(e) => setTask(e.target.value)} aria-label="Task description" rows={2} />
         <Button busy={run.isPending} disabled={!task.trim()} {...{ type: 'submit' }}>
           Run
         </Button>
@@ -72,6 +64,78 @@ function RunPanel({ agentId }: { agentId: string }) {
   );
 }
 
+function AdvancedSection({ agent }: { agent: Agent }) {
+  const [open, setOpen] = useState(false);
+  const state = useAgentState(agent.id);
+  return (
+    <Panel
+      title="Advanced / developer"
+      actions={
+        <button type="button" className="advanced-toggle" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
+          {open ? 'Hide' : 'Show'}
+        </button>
+      }
+    >
+      {!open ? (
+        <p style={{ fontSize: 12, color: 'var(--text-3)' }}>
+          Raw state, stable facts, model policy, permissions, schema and a manual run tool.
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div>
+            <div className="project-card__section-title" style={{ marginBottom: 6 }}>Run a task manually</div>
+            <RunPanel agentId={agent.id} />
+          </div>
+          <div>
+            <div className="project-card__section-title" style={{ marginBottom: 6 }}>Stable facts</div>
+            {Object.keys(state.data?.stable_facts ?? {}).length > 0 ? (
+              <JsonTree data={state.data!.stable_facts} />
+            ) : (
+              <p style={{ fontSize: 12, color: 'var(--text-3)' }}>None recorded.</p>
+            )}
+          </div>
+          <div>
+            <div className="project-card__section-title" style={{ marginBottom: 6 }}>Raw structured_data</div>
+            {state.data ? <JsonTree data={state.data.structured_data} /> : <Skeleton height={40} />}
+          </div>
+          <div>
+            <div className="project-card__section-title" style={{ marginBottom: 6 }}>Configuration</div>
+            <KeyValueList
+              entries={[
+                ['ID', <span className="mono" key="id">{agent.id}</span>],
+                ['Privacy', agent.privacy_class ?? '—'],
+                ['Model policy', agent.model_policy ?? '—'],
+                ['Memory namespace', <span className="mono" key="m">{agent.memory_namespace ?? `agent:${agent.id}`}</span>],
+                ['Allowed tools', (agent.allowed_tools ?? []).join(', ') || 'none'],
+                ['Created', <RelativeTime key="c" iso={agent.created_at} />],
+                ['Updated', <RelativeTime key="u" iso={agent.updated_at} />],
+              ]}
+            />
+          </div>
+          {Object.keys(agent.permissions ?? {}).length > 0 && (
+            <div>
+              <div className="project-card__section-title" style={{ marginBottom: 6 }}>Permissions</div>
+              <JsonTree data={agent.permissions} />
+            </div>
+          )}
+          {Object.keys(agent.state_schema ?? {}).length > 0 && (
+            <div>
+              <div className="project-card__section-title" style={{ marginBottom: 6 }}>State schema</div>
+              <JsonTree data={agent.state_schema} />
+            </div>
+          )}
+          {(agent.schedules ?? []).length > 0 && (
+            <div>
+              <div className="project-card__section-title" style={{ marginBottom: 6 }}>Schedules</div>
+              <JsonTree data={agent.schedules} />
+            </div>
+          )}
+        </div>
+      )}
+    </Panel>
+  );
+}
+
 export function AgentDetailPage() {
   const { agentId = '' } = useParams();
   const agent = useAgent(agentId);
@@ -82,6 +146,7 @@ export function AgentDetailPage() {
   const archiveAgent = useArchiveAgent(agentId);
   const [editOpen, setEditOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
+  const [askOpen, setAskOpen] = useState(false);
 
   if (agent.isPending) {
     return (
@@ -93,11 +158,10 @@ export function AgentDetailPage() {
             <Skeleton height={14} width={340} />
           </div>
         </div>
-        <Skeleton height={200} />
+        <Skeleton height={240} />
       </>
     );
   }
-
   if (agent.isError) {
     return (
       <Panel title="Agent">
@@ -109,13 +173,7 @@ export function AgentDetailPage() {
   const a = agent.data;
   const status = a.status ?? 'IDLE';
   const enabled = a.enabled !== false;
-  const Layout = getAgentLayout(a.id, a.category ?? undefined);
-  const openTasks = (tasks.data ?? []).filter(
-    (t) => !['SUCCEEDED', 'FAILED', 'CANCELLED', 'COMPLETED'].includes(t.status),
-  );
-  const doneTasks = (tasks.data ?? []).filter((t) =>
-    ['SUCCEEDED', 'FAILED', 'CANCELLED', 'COMPLETED'].includes(t.status),
-  );
+  const openTasks = (tasks.data ?? []).filter((t) => !['SUCCEEDED', 'FAILED', 'CANCELLED', 'COMPLETED'].includes(t.status));
 
   function toggleEnabled() {
     patchAgent.mutate(
@@ -140,17 +198,13 @@ export function AgentDetailPage() {
           <div className="agent-hero__badges">
             <PrivacyBadge privacy={a.privacy_class ?? 'PERSONAL'} />
             <ModelPolicyBadge policy={a.model_policy ?? 'BALANCED'} />
-            <Badge mono title="Memory namespace">
-              {a.memory_namespace ?? `agent:${a.id}`}
-            </Badge>
-            {(a.allowed_tools ?? []).map((tool) => (
-              <Badge key={String(tool)} tone="accent" mono>
-                {String(tool)}
-              </Badge>
-            ))}
+            {a.category && <Badge mono>{a.category}</Badge>}
           </div>
         </div>
         <div className="agent-hero__actions">
+          <Button size="sm" variant="accent" onClick={() => setAskOpen(true)}>
+            Ask {a.name}
+          </Button>
           <Button size="sm" onClick={() => setEditOpen(true)}>
             Edit
           </Button>
@@ -163,20 +217,19 @@ export function AgentDetailPage() {
         </div>
       </div>
 
+      {/* DATA — the primary experience */}
+      <Panel title="Data" flush>
+        <div style={{ padding: 'var(--space-4)' }}>
+          {state.isPending && <Skeleton height={160} />}
+          {state.isError && <ErrorState error={state.error} onRetry={() => void state.refetch()} />}
+          {state.data && <AgentWorkbench agent={a} state={state.data} />}
+        </div>
+      </Panel>
+
       <div className="agent-detail-grid">
         <div className="agent-detail-grid__col">
-          <Panel title={`Talk to ${a.name}`}>
-            <MessageComposer agentId={a.id} agentName={a.name} />
-          </Panel>
-
-          <Panel title="Current state">
-            {state.isPending && <Skeleton height={120} />}
-            {state.isError && <ErrorState error={state.error} onRetry={() => void state.refetch()} />}
-            {state.data && <Layout state={state.data} />}
-          </Panel>
-
-          <Panel title="Run a task">
-            <RunPanel agentId={a.id} />
+          <Panel title="Today / current state">
+            {state.isPending ? <Skeleton height={80} /> : state.data ? <CurrentStateCard state={state.data} /> : null}
           </Panel>
 
           <Panel title="Recent activity" flush>
@@ -190,18 +243,6 @@ export function AgentDetailPage() {
         </div>
 
         <div className="agent-detail-grid__col">
-          <Panel title="Stable facts">
-            {state.data ? (
-              Object.keys(state.data.stable_facts ?? {}).length > 0 ? (
-                <JsonTree data={state.data.stable_facts} />
-              ) : (
-                <EmptyState icon="◆" title="No stable facts" hint="Long-lived facts the agent learns will appear here." />
-              )
-            ) : (
-              <Skeleton height={60} />
-            )}
-          </Panel>
-
           <Panel title={`Open loops (${openTasks.length})`} flush>
             {openTasks.length === 0 ? (
               <EmptyState icon="✓" title="No open tasks" />
@@ -213,8 +254,7 @@ export function AgentDetailPage() {
                       {t.title}
                       {t.due_at && (
                         <span className="attention-item__meta">
-                          {' '}
-                          · due <RelativeTime iso={t.due_at} />
+                          {' '}· due <RelativeTime iso={t.due_at} />
                         </span>
                       )}
                     </span>
@@ -225,40 +265,17 @@ export function AgentDetailPage() {
             )}
           </Panel>
 
-          {doneTasks.length > 0 && (
-            <Panel title="Recently completed" flush>
-              <div>
-                {doneTasks.slice(0, 5).map((t) => (
-                  <div key={t.id} className="task-row">
-                    <span className="task-row__title" style={{ color: 'var(--text-3)' }}>
-                      {t.title}
-                    </span>
-                    <TaskStatusBadge status={t.status} />
-                  </div>
-                ))}
-              </div>
-            </Panel>
-          )}
-
-          {(a.schedules ?? []).length > 0 && (
-            <Panel title="Schedules">
-              <JsonTree data={a.schedules} />
-            </Panel>
-          )}
-
-          <Panel title="Configuration">
-            <KeyValueList
-              entries={[
-                ['ID', <span className="mono" key="id">{a.id}</span>],
-                ['Category', a.category ?? '—'],
-                ['Created', <RelativeTime key="c" iso={a.created_at} />],
-                ['Updated', <RelativeTime key="u" iso={a.updated_at} />],
-                ['Last activity', <RelativeTime key="l" iso={a.last_activity_at} />],
-              ]}
-            />
+          <Panel title={`Ask ${a.name}`}>
+            <MessageComposer agentId={a.id} agentName={a.name} />
           </Panel>
         </div>
       </div>
+
+      <AdvancedSection agent={a} />
+
+      <Dialog open={askOpen} onClose={() => setAskOpen(false)} title={`Ask ${a.name}`}>
+        <MessageComposer agentId={a.id} agentName={a.name} />
+      </Dialog>
 
       <EditAgentDialog key={a.updated_at ?? 'edit'} agent={a} open={editOpen} onClose={() => setEditOpen(false)} />
 
@@ -287,10 +304,7 @@ export function AgentDetailPage() {
           </>
         }
       >
-        <p>
-          Archiving disables the agent and hides it from routing. Its memory and state are kept — you can re-enable it
-          later. Nothing is permanently deleted.
-        </p>
+        <p>Archiving disables the agent and hides it from routing. Its memory and state are kept — you can re-enable it later. Nothing is permanently deleted.</p>
       </Dialog>
     </>
   );

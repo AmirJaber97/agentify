@@ -3,8 +3,15 @@ import clsx from 'clsx';
 import type { AgentCard as AgentCardModel } from '@shared/types';
 import { AgentAvatar, AgentStatusBadge } from '@/components/status';
 import { RelativeTime } from '@/components/RelativeTime';
+import { useAgentState } from '@/api/queries';
+import { deriveDataSummary } from '@/features/hq/summary';
 
 export function AgentCard({ card }: { card: AgentCardModel }) {
+  // Real structured-data summary (cached; shared with HQ). Omitted when the
+  // data can't support one — never fabricated.
+  const state = useAgentState(card.id);
+  const dataSummary = deriveDataSummary(state.data ?? undefined);
+
   return (
     <Link
       to={`/agents/${card.id}`}
@@ -19,6 +26,7 @@ export function AgentCard({ card }: { card: AgentCardModel }) {
         </div>
       </div>
       {card.current_focus ? <div className="agent-card__focus">{card.current_focus}</div> : null}
+      {dataSummary ? <div className="agent-card__summary mono">{dataSummary}</div> : null}
       {card.warning && (
         <div className="agent-card__warning">
           <span aria-hidden="true">▲</span>

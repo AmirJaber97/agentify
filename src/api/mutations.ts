@@ -89,6 +89,46 @@ export function useArchiveAgent(agentId: string) {
   });
 }
 
+/**
+ * Persist a structured-data edit by sending a precise instruction to the owning
+ * agent (the only write channel PAOS v1 offers). Returns the raw response so the
+ * caller can honestly report success/failure; canonical state is refetched on
+ * settle rather than optimistically mutated.
+ */
+export function useAgentDatasetEdit(agentId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (instruction: string) =>
+      api<MessageResponse>(`/api/agents/${encodeURIComponent(agentId)}/message`, {
+        method: 'POST',
+        body: { message: instruction, dry_run: false, require_model: false },
+        timeoutMs: LONG_TIMEOUT_MS,
+      }),
+    onSettled: () => {
+      void qc.invalidateQueries({ queryKey: keys.agent(agentId) });
+      void qc.invalidateQueries({ queryKey: keys.activity });
+      void qc.invalidateQueries({ queryKey: keys.dashboard });
+    },
+  });
+}
+
+/**
+ * Update an agent's ui_metadata (view configuration). Deterministic and
+ * reliable — PATCH accepts ui_metadata. The caller supplies a complete
+ * ui_metadata object built with buildUiMetadataPatch (preserves other keys).
+ */
+export function useUpdateAgentUiMetadata(agentId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (ui_metadata: Record<string, unknown>) =>
+      api<Agent>(`/api/agents/${encodeURIComponent(agentId)}`, { method: 'PATCH', body: { ui_metadata } }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: keys.agent(agentId) });
+      void qc.invalidateQueries({ queryKey: keys.agents });
+    },
+  });
+}
+
 export function useDeriveAgent() {
   return useMutation({
     mutationFn: (message: string) =>
